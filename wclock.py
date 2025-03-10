@@ -38,23 +38,26 @@ default_config = {
 def get_color(config, key: str) -> QColor:
     value = config.get(key, default_config[key])
 
-    if value.lower() in ["none", "", "transparent"]:
-        return QColor(0, 0, 0, 0)
+    try:
+        if value.lower() in ["none", "", "transparent"]:
+            return QColor(0, 0, 0, 0)
 
-    if len(value) == 9 and value.startswith('#'):
-        r = int(value[1:3], 16)
-        g = int(value[3:5], 16)
-        b = int(value[5:7], 16)
-        a = int(value[7:9], 16)
-        return QColor(r, g, b, a)
+        if len(value) == 9 and value.startswith('#'):
+            r = int(value[1:3], 16)
+            g = int(value[3:5], 16)
+            b = int(value[5:7], 16)
+            a = int(value[7:9], 16)
+            return QColor(r, g, b, a)
 
-    if value.startswith('rgb(') and value.endswith(')'):
-        r, g, b = map(int, value[4:-1].split(','))
-        return QColor(r, g, b)
+        if value.startswith('rgb(') and value.endswith(')'):
+            r, g, b = map(int, value[4:-1].split(','))
+            return QColor(r, g, b)
 
-    if value.startswith('rgba(') and value.endswith(')'):
-        r, g, b, a = map(int, value[5:-1].split(','))
-        return QColor(r, g, b, a)
+        if value.startswith('rgba(') and value.endswith(')'):
+            r, g, b, a = map(int, value[5:-1].split(','))
+            return QColor(r, g, b, a)
+    except Exception:
+        return QColor(0, 0, 0)
 
     qcolor = QColor(value)
     return qcolor
