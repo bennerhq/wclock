@@ -29,6 +29,7 @@ default_config = {
     'dial_color': '#FFFFFF00',
     'date_background_color': "#000000",
     'date_color': "#FFFFFF",
+    'frameless': True,
     'always_on_top': True,
     'tool': True,
 
@@ -89,6 +90,7 @@ def load_config(yaml_filename : str) -> dict:
         'dial_color': get_color(config, 'dial_color'),
         'date_background_color': get_color(config, 'date_background_color'),
         'date_color': get_color(config, 'date_color'),
+        'frameless': config.get('frameless', default_config['frameless']),
         'always_on_top': config.get('always_on_top', default_config['always_on_top']),
         'tool': config.get('tool', default_config['tool']),
         'window': config.get('window', default_config['window'])
@@ -202,14 +204,17 @@ class ClockWindow(QMainWindow):
         width = int(window_config['width'])
         height = int(window_config['height'])
 
-        winFlags = Qt.FramelessWindowHint
-        if window_config.get('always_on_top', True):
+        winFlags = 0
+        if config.get('frameless', True):
+            winFlags |= Qt.FramelessWindowHint
+        if config.get('always_on_top', True):
             winFlags |= Qt.WindowStaysOnTopHint
-        if window_config.get('tool', True):
+        if config.get('tool', True):
             winFlags |= Qt.Tool
+        if winFlags != 0:
+            self.setWindowFlags(winFlags)
 
         self.setGeometry(x, y, width, height)
-        self.setWindowFlags(winFlags)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowOpacity(0.9)
 
