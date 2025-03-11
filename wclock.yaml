@@ -1,4 +1,5 @@
-hour_mark_color: "#000000"
+background_color: "#00000000"
+hour_mark_color: "none"
 minute_mark_color: "#000000"
 second_hand_color: "#FF0000"
 hour_hand_color: "#000000"

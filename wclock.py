@@ -21,6 +21,7 @@ from PyQt5.QtGui import QPainter, QPen, QColor, QGuiApplication
 
 # Function to load configuration from YAML file
 default_config = {
+    'background_color': '#FFFFFF',
     'hour_mark_color': '#000000',
     'minute_mark_color': '#000000',
     'second_hand_color': '#FF0000',
@@ -42,10 +43,10 @@ default_config = {
 }
 
 def get_color(config, key: str) -> QColor:
-    value = config.get(key, default_config[key])
+    value = config.get(key, default_config[key]).strip().lower()
 
     try:
-        if value.lower() in ["none", "", "transparent"]:
+        if value in ["", "none", "transparent"]:
             return QColor(0, 0, 0, 0)
 
         if len(value) == 9 and value.startswith('#'):
@@ -82,6 +83,7 @@ def load_config(yaml_filename : str) -> dict:
         print(f"An unexpected error occurred: {e}. Using default settings.")
 
     return {
+        'background_color': get_color(config, 'background_color'),
         'hour_mark_color': get_color(config, 'hour_mark_color'),
         'minute_mark_color': get_color(config, 'minute_mark_color'),
         'second_hand_color': get_color(config, 'second_hand_color'),
@@ -106,7 +108,14 @@ class ClockWidget(QWidget):
         else:
             self.timer.start(1000) # Update every second
         self.setMinimumSize(100, 100)
-        self.setAttribute(Qt.WA_TranslucentBackground)
+
+        if config['background_color'].alpha() == 0:
+            self.setAttribute(Qt.WA_TranslucentBackground)
+        else:
+            self.setAutoFillBackground(True)
+            palette = self.palette()
+            palette.setColor(self.backgroundRole(), config['background_color'])
+            self.setPalette(palette)
 
     def paintEvent(self, event):
         current_time = QTime.currentTime()
