@@ -263,7 +263,7 @@ def find_config_file():
     script_name = f'{script_base_name}.yaml'
 
     # Check for a config file in the user's home directory
-    home_config_path = os.path.expanduser('~/.{script_name}')
+    home_config_path = os.path.expanduser(f'~/.{script_name}')
     if os.path.exists(home_config_path):
         return home_config_path
 
