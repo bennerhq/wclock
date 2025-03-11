@@ -1,14 +1,15 @@
-background_color: "#FFFFFF00"
+background_color: "none"
 hour_mark_color: "black"
 minute_mark_color: "black"
 second_hand_color: "red"
 hour_hand_color: "black"
 minute_hand_color: "black"
-dial_color: "#FFFFFF00"
+dial_color: "none"
 date_background_color: "black"
 date_color: "white"
+
 frameless: True
-always_on_top: False
+always_on_top: True
 tool: True
 
 window:

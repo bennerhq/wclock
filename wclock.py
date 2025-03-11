@@ -107,17 +107,11 @@ class ClockWidget(QWidget):
         else:
             self.timer.start(1000) # Update every second
         self.setMinimumSize(100, 100)
-
-        if config['background_color'].alpha() == 0:
-            self.setAttribute(Qt.WA_TranslucentBackground)
-        else:
-            self.setAutoFillBackground(True)
-            palette = self.palette()
-            palette.setColor(self.backgroundRole(), config['background_color'])
-            self.setPalette(palette)
+        self.setAttribute(Qt.WA_TranslucentBackground)
 
     def paintEvent(self, event):
         current_time = QTime.currentTime()
+
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
 
@@ -223,8 +217,13 @@ class ClockWindow(QMainWindow):
             self.setWindowFlags(winFlags)
 
         self.setGeometry(x, y, width, height)
-        self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setWindowOpacity(0.9)
+        if config['background_color'].alpha() == 0:
+            self.setAttribute(Qt.WA_TranslucentBackground)
+        else:
+            self.setAutoFillBackground(True)
+            palette = self.palette()
+            palette.setColor(self.backgroundRole(), config['background_color'])
+            self.setPalette(palette)
 
         self.central_widget = QWidget()
         self.central_widget.setAttribute(Qt.WA_TranslucentBackground)
