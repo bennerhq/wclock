@@ -29,6 +29,9 @@ default_config = {
     'dial_color': '#FFFFFF00',
     'date_background_color': "#000000",
     'date_color': "#FFFFFF",
+    'always_on_top': True,
+    'tool': True,
+
     'window': {
         'x': -200,
         'y': -200,
@@ -80,6 +83,8 @@ def load_config(yaml_filename : str) -> dict:
         'dial_color': get_color(config, 'dial_color'),
         'date_background_color': get_color(config, 'date_background_color'),
         'date_color': get_color(config, 'date_color'),
+        'always_on_top': config.get('always_on_top', default_config['always_on_top']),
+        'tool': config.get('tool', default_config['tool']),
         'window': config.get('window', default_config['window'])
     }
 
@@ -128,6 +133,25 @@ class ClockWidget(QWidget):
                     painter.drawLine(92, 0, 96, 0)
                 painter.rotate(6)
 
+        # Draw day number at 15:00 o'clock
+        if config['date_background_color'].alpha() != 0:
+            rect = QRect(80, -10, 20, 20)
+            today = QDateTime.currentDateTime().toString("dd")
+
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(config['date_background_color'])
+            painter.save()
+            painter.drawRoundedRect(rect, 5, 5)
+            painter.restore()
+
+            painter.setPen(QPen(config['date_color'], 1))
+            font = painter.font()
+            font.setPointSize(10)
+            painter.setFont(font)
+            painter.save()
+            painter.drawText(rect, Qt.AlignCenter, today)
+            painter.restore()
+
         # Draw hour hand
         if config['hour_hand_color'].alpha() != 0:
             painter.setPen(QPen(config['hour_hand_color'], 6, Qt.SolidLine, Qt.RoundCap))
@@ -153,26 +177,6 @@ class ClockWidget(QWidget):
             painter.drawLine(0, 0, 0, -90)
             painter.restore()
 
-        # Draw day number at 15:00 o'clock
-        if config['date_background_color'].alpha() != 0:
-            today = QDateTime.currentDateTime().toString("dd")
-            painter.setPen(Qt.NoPen)
-            painter.setBrush(config['date_background_color'])
-            painter.save()
-            painter.rotate(90)  # Rotate to 15:00 o'clock position
-            painter.drawRoundedRect(-10, -100, 20, 20, 5, 5)
-            painter.restore()
-
-            painter.setPen(QPen(config['date_color'], 1))
-            font = painter.font()
-            font.setPointSize(10)
-            painter.setFont(font)
-            painter.save()
-            painter.rotate(90)  # Rotate to 15:00 o'clock position
-            painter.drawText(QRect(-10, -100, 20, 20), Qt.AlignRight | Qt.AlignTop, today)
-            painter.restore()
-
-
 class ClockWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -192,8 +196,14 @@ class ClockWindow(QMainWindow):
         width = int(window_config['width'])
         height = int(window_config['height'])
 
+        winFlags = Qt.FramelessWindowHint
+        if window_config.get('always_on_top', True):
+            winFlags |= Qt.WindowStaysOnTopHint
+        if window_config.get('tool', True):
+            winFlags |= Qt.Tool
+
         self.setGeometry(x, y, width, height)
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool)
+        self.setWindowFlags(winFlags)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowOpacity(0.9)
 
