@@ -1,19 +1,21 @@
-background_color: "none"
-hour_mark_color: "black"
-minute_mark_color: "black"
-second_hand_color: "red"
-hour_hand_color: "black"
-minute_hand_color: "black"
-dial_color: "none"
-date_background_color: "black"
-date_color: "white"
-
-frameless: True
-always_on_top: True
-tool: True
-
 window:
+  frameless: True
+  always_on_top: True
+  tool: True
+
   x: -200 
   y: -200 
   width: 200 
   height: 200
+
+colors:
+  background: "none"
+  hour_mark: "black"
+  minute_mark: "black"
+  second_hand: "red"
+  hour_hand: "black"
+  minute_hand: "black"
+  dial: "none"
+  date_background: "black"
+  date: "white"
+  date_font: "Courier New"
