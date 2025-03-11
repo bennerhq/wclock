@@ -68,11 +68,17 @@ def get_color(config, key: str) -> QColor:
     return qcolor
 
 def load_config(yaml_filename : str) -> dict:
-    if os.path.exists(yaml_filename):
+    config = default_config
+
+    try:
         with open(yaml_filename, 'r') as file:
             config = yaml.safe_load(file)
-    else:
-        config = default_config
+    except FileNotFoundError:
+        print(f"Configuration file not found: {yaml_filename}. Using default settings.")
+    except yaml.YAMLError as e:
+        print(f"Error parsing YAML file: {e}. Using default settings.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}. Using default settings.")
 
     return {
         'hour_mark_color': get_color(config, 'hour_mark_color'),
@@ -251,8 +257,28 @@ class ClockWindow(QMainWindow):
         dir = -10 if event.angleDelta().y() > 0 else 10
         self.resize(self.width() + dir, self.height() + dir)
 
+def find_config_file():
+    # Find the name of the script
+    script_base_name = os.path.splitext(os.path.basename(__file__))[0]
+    script_name = f'{script_base_name}.yaml'
+
+    # Check for a config file in the user's home directory
+    home_config_path = os.path.expanduser('~/.{script_name}')
+    if os.path.exists(home_config_path):
+        return home_config_path
+
+    # Check for a config file with the same name as the script
+    local_config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), script_name)
+    if os.path.exists(local_config_path):
+        return local_config_path
+
+    # If no config file is found, return a default name
+    return script_name
+
 if __name__ == "__main__":
-    config_path = sys.argv[1] if len(sys.argv) > 1 else 'wclock.yaml'
+    config_path = sys.argv[1] if len(sys.argv) > 1 else find_config_file()
+    print(f"Config file: {config_path}")
+
     config = load_config(config_path)
 
     app = QApplication(sys.argv)
