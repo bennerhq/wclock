@@ -66,8 +66,7 @@ def get_color(config, key: str) -> QColor:
     except Exception:
         return QColor(0, 0, 0)
 
-    qcolor = QColor(value)
-    return qcolor
+    return QColor(value)
 
 def load_config(yaml_filename : str) -> dict:
     config = default_config
