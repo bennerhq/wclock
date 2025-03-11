@@ -16,7 +16,7 @@ import sys
 import os
 import yaml
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget
-from PyQt5.QtCore import Qt, QTimer, QTime, QPoint, QRect
+from PyQt5.QtCore import Qt, QTimer, QTime, QDateTime, QPoint, QRect
 from PyQt5.QtGui import QPainter, QPen, QColor, QGuiApplication
 
 # Function to load configuration from YAML file
@@ -27,6 +27,8 @@ default_config = {
     'hour_hand_color': '#000000',
     'minute_hand_color': '#000000',
     'dial_color': '#FFFFFF00',
+    'date_background_color': "#000000",
+    'date_color': "#FFFFFF",
     'window': {
         'x': -200,
         'y': -200,
@@ -66,17 +68,20 @@ def load_config(yaml_filename : str) -> dict:
     if os.path.exists(yaml_filename):
         with open(yaml_filename, 'r') as file:
             config = yaml.safe_load(file)
-            return {
-                'hour_mark_color': get_color(config, 'hour_mark_color'),
-                'minute_mark_color': get_color(config, 'minute_mark_color'),
-                'second_hand_color': get_color(config, 'second_hand_color'),
-                'hour_hand_color': get_color(config, 'hour_hand_color'),
-                'minute_hand_color': get_color(config, 'minute_hand_color'),
-                'dial_color': get_color(config, 'dial_color'),
-                'window': config.get('window', default_config['window'])
-            }
     else:
-        return default_config
+        config = default_config
+
+    return {
+        'hour_mark_color': get_color(config, 'hour_mark_color'),
+        'minute_mark_color': get_color(config, 'minute_mark_color'),
+        'second_hand_color': get_color(config, 'second_hand_color'),
+        'hour_hand_color': get_color(config, 'hour_hand_color'),
+        'minute_hand_color': get_color(config, 'minute_hand_color'),
+        'dial_color': get_color(config, 'dial_color'),
+        'date_background_color': get_color(config, 'date_background_color'),
+        'date_color': get_color(config, 'date_color'),
+        'window': config.get('window', default_config['window'])
+    }
 
 class ClockWidget(QWidget):
     def __init__(self):
@@ -147,6 +152,26 @@ class ClockWidget(QWidget):
             painter.rotate(6 * seconds_with_fraction)
             painter.drawLine(0, 0, 0, -90)
             painter.restore()
+
+        # Draw day number at 15:00 o'clock
+        if config['date_background_color'].alpha() != 0:
+            today = QDateTime.currentDateTime().toString("dd")
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(config['date_background_color'])
+            painter.save()
+            painter.rotate(90)  # Rotate to 15:00 o'clock position
+            painter.drawRoundedRect(-10, -100, 20, 20, 5, 5)
+            painter.restore()
+
+            painter.setPen(QPen(config['date_color'], 1))
+            font = painter.font()
+            font.setPointSize(10)
+            painter.setFont(font)
+            painter.save()
+            painter.rotate(90)  # Rotate to 15:00 o'clock position
+            painter.drawText(QRect(-10, -100, 20, 20), Qt.AlignRight | Qt.AlignTop, today)
+            painter.restore()
+
 
 class ClockWindow(QMainWindow):
     def __init__(self):

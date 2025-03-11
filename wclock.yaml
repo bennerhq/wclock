@@ -4,6 +4,8 @@ second_hand_color: "#FF0000"
 hour_hand_color: "#000000"
 minute_hand_color: "#000000"
 dial_color: "#FFFFFF00"
+date_background_color: "#000000"
+date_color: "#FFFFFF"
 
 window:
   x: -200 
