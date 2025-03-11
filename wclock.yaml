@@ -10,12 +10,15 @@ window:
 
 colors:
   background: "none"
+  dial: "none"
+
   hour_mark: "black"
   minute_mark: "black"
+
   second_hand: "red"
   hour_hand: "black"
   minute_hand: "black"
-  dial: "none"
+
   date_background: "black"
   date: "white"
   date_font: "Courier New"
